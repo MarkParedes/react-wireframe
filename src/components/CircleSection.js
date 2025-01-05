@@ -8,7 +8,7 @@ const CirculosSection = () => {
   ];
 
   return (
-    <div className="p-8 bg-gray-100">
+    <div className="p-8" style={{ backgroundColor: '#c4d7d4' }}>
       <header className="text-center mb-8">
         <h1 className="text-4xl font-bold">Pilares de Nuestra Metodología</h1>
         <p className="mt-4 text-lg">Cada paso está diseñado para garantizar resultados confiables.</p>
@@ -19,7 +19,7 @@ const CirculosSection = () => {
           <div
             key={index}
             className={`flex items-center justify-center rounded-full shadow-md p-4 text-center ${
-              index === 1 ? 'w-60 h-60 bg-blue-400 text-white text-lg' : 'w-40 h-40 bg-blue-200 text-blue-800'
+              index === 1 ? 'w-80 h-80 bg-gray-800 text-white text-lg' : 'w-60 h-60 bg-gray-800 text-white text-lg'
             }`}
           >
             {circulo.text}
