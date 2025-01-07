@@ -28,6 +28,12 @@ const LoginAdminPage = () => {
             Regístrate aquí
           </a>
         </p>
+        <p className="mt-4 text-sm text-center">
+          ¿Eres usuario?{' '}
+          <a href="/login" className="text-blue-500 hover:underline">
+            Regístrate aquí
+          </a>
+        </p>
       </form>
     </div>
   );

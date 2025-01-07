@@ -1,21 +1,20 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
-const protect = async (req, res, next) => {
-  let token;
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+const protect = (req, res, next) => {
+  let token = req.headers.authorization;
+
+  if (token && token.startsWith('Bearer')) {
     try {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
-      next();
+      token = token.split(' ')[1]; // Elimina la palabra "Bearer"
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verifica el token
+      req.user = decoded; // Agrega los datos del usuario al request
+      next(); // Pasa al siguiente middleware
     } catch (error) {
-      res.status(401).json({ message: 'No autorizado' });
+      res.status(401).json({ message: 'Token no válido' });
     }
-  }
-  if (!token) {
-    res.status(401).json({ message: 'No autorizado, no hay token' });
+  } else {
+    res.status(401).json({ message: 'No hay token, no autorizado' });
   }
 };
 
-module.exports = { protect };
+module.exports = protect;

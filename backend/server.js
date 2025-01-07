@@ -1,67 +1,43 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
-const cors = require('cors');
+const dotenv = require('dotenv').config();
+const userRoutes = require('./routers/userRoutes');
 
-// Cargar configuración
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Middleware
 app.use(express.json());
 
-// Conectar a MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => console.log('Conexión a MongoDB exitosa'))
-  .catch(err => console.error('Error al conectar a MongoDB:', err));
-
-// Modelo de usuario
-const User = require('./models/userModel');
-
-// Rutas de autenticación
-app.post('/auth/register', async (req, res) => {
-  try {
-    const { username, password, role } = req.body;
-
-    // Validaciones básicas
-    if (!username || !password || !role) {
-      return res.status(400).json({ message: 'Faltan datos requeridos' });
-    }
-
-    // Crear usuario
-    const user = new User({ username, password, role });
-    await user.save();
-    res.status(201).json({ message: 'Usuario registrado exitosamente' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error al registrar usuario' });
-  }
+// Ruta para la raíz
+app.get('/', (req, res) => {
+  res.send('¡Bienvenido al backend de mi aplicación!');
 });
 
-app.post('/auth/login', async (req, res) => {
+// Rutas
+app.use('/api/users', userRoutes);
+
+// Función para conectar a MongoDB
+const connectDB = async () => {
   try {
-    const { username, password } = req.body;
-
-    // Validaciones básicas
-    const user = await User.findOne({ username });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
-    }
-
-    // Respuesta de éxito
-    res.status(200).json({ message: 'Inicio de sesión exitoso', role: user.role });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error al iniciar sesión' });
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
   }
-});
+};
 
-// Puerto de escucha
-const PORT = process.env.AUTH_PORT || 5001;
+// Llama a la conexión
+connectDB();
+
+// Cambia el puerto aquí
+const PORT = process.env.PORT || 5001;
+
 app.listen(PORT, () => {
-  console.log(`Servidor de autenticación corriendo en http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
-
